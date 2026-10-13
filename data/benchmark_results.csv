@@ -1,0 +1,4 @@
+key_bits,repeat,keygen_ms,encrypt_ms,decrypt_ms,python,platform
+1024,1,85.546125,0.075250,2.243208,3.15.0,macOS-27.0.1-arm64-arm-64bit-Mach-O
+2048,1,1870.468625,0.190000,15.508875,3.15.0,macOS-27.0.1-arm64-arm-64bit-Mach-O
+3072,1,892.054625,0.293334,50.796833,3.15.0,macOS-27.0.1-arm64-arm-64bit-Mach-O
