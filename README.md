@@ -270,7 +270,11 @@ Additional project files: `pyproject.toml` defines packaging and the
 `rsaoaep` entry point; `requirements.txt` lists developer tools;
 `Makefile` provides common commands; `.gitignore` excludes environments,
 caches, build products, and demo secrets; `LICENSE` contains the MIT license.
-The RFC 8017 reference is recorded in [report/references.bib](report/references.bib).
+The bibliography records the original OAEP paper by Bellare and Rogaway,
+Pointcheval's RSA-encryption discussion, and the normative RFC 8017
+specification in [report/references.bib](report/references.bib). The
+implementation is original project code following the published OAEP
+construction and standard; it does not copy source code from those works.
 
 Further design detail: [architecture](docs/architecture.md),
 [interfaces](docs/interfaces.md), [experiment plan](docs/experiment_plan.md),

@@ -12,5 +12,7 @@
    Discuss trends and variance without making cross-machine claims.
 6. **Limitations:** educational-only implementation, non-constant-time
    arithmetic, no blinding/CRT, and no formal cryptographic review.
-7. **References:** RFC 8017 and any optional reference-library validation,
-   clearly labeled as an independent cross-check rather than implementation.
+7. **References:** cite Bellare and Rogaway for the OAEP construction,
+   Pointcheval for RSA-encryption security context, and RFC 8017 for the
+   standardized RSAES-OAEP encoding. Cite any optional reference-library
+   validation as an independent cross-check, not as the implementation.
