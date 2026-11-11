@@ -6,6 +6,7 @@ from pathlib import Path
 
 from rsaoaep import decrypt, encrypt, generate_keypair
 from rsaoaep.oaep import maximum_message_length
+from rsaoaep.rsa_core import MINIMUM_KEY_BITS
 from rsaoaep.serialization import save_private_key, save_public_key
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +38,7 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     parser = _parser()
     args = parser.parse_args(argv)
-    if args.bits < 528:
+    if args.bits < MINIMUM_KEY_BITS:
         parser.error("RSA-OAEP with SHA-256 requires at least 528 key bits")
 
     if args.file is not None:

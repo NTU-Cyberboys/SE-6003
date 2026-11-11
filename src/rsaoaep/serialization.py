@@ -23,13 +23,24 @@ def save_public_key(key: PublicKey, path: str | Path) -> None:
 
 def save_private_key(key: PrivateKey, path: str | Path) -> None:
     destination = Path(path)
-    destination.write_text(json.dumps(private_key_to_dict(key), indent=2) + "\n", encoding="utf-8")
     if os.name == "posix":
-        # Windows permissions come from the directory ACL; chmod is POSIX-only here.
         try:
-            os.chmod(destination, 0o600)
+            descriptor = os.open(
+                destination,
+                os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+                0o600,
+            )
+            with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+                os.fchmod(stream.fileno(), 0o600)
+                stream.write(json.dumps(private_key_to_dict(key), indent=2) + "\n")
         except OSError as exc:
-            raise SerializationError(f"could not restrict private key permissions: {exc}") from exc
+            raise SerializationError(f"could not securely write private key: {exc}") from exc
+    else:
+        # Windows permissions come from the destination directory's access-control list.
+        destination.write_text(
+            json.dumps(private_key_to_dict(key), indent=2) + "\n",
+            encoding="utf-8",
+        )
 
 
 def _read_object(path: str | Path) -> dict[str, Any]:

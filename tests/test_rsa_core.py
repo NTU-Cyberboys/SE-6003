@@ -12,6 +12,14 @@ def test_keypair_and_round_trip():
     assert decrypt(ciphertext, pair.private_key, b"context") == message
 
 
+def test_keypair_minimum_oaep_size():
+    with pytest.raises(ValueError, match="at least 528 key bits"):
+        generate_keypair(527)
+
+    pair = generate_keypair(528, rounds=12)
+    assert decrypt(encrypt(b"", pair.public_key), pair.private_key) == b""
+
+
 def test_oversized_message_rejected():
     pair = generate_keypair(1024, rounds=12)
     with pytest.raises(MessageTooLongError):

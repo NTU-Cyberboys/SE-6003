@@ -5,6 +5,7 @@ from .primality import generate_prime
 from .types import PrivateKey, PublicKey, RSAKeyPair
 
 DEFAULT_PUBLIC_EXPONENT = 65537
+MINIMUM_KEY_BITS = 528
 
 
 def generate_keypair(
@@ -14,6 +15,8 @@ def generate_keypair(
 ) -> RSAKeyPair:
     if public_exponent <= 1 or public_exponent % 2 == 0:
         raise ValueError("public exponent must be an odd integer greater than one")
+    if bits < MINIMUM_KEY_BITS:
+        raise ValueError("RSA-OAEP with SHA-256 requires at least 528 key bits")
     if bits < max(16, public_exponent.bit_length() + 1):
         raise ValueError("RSA key size is too small for the selected public exponent")
     p_bits = bits // 2

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from .exceptions import RSAOAEPError
-from .rsa_core import decrypt, encrypt, generate_keypair
+from .rsa_core import MINIMUM_KEY_BITS, decrypt, encrypt, generate_keypair
 from .serialization import (
     load_private_key,
     load_public_key,
@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "keygen":
             if args.public_key.resolve() == args.private_key.resolve():
                 raise ValueError("public and private key paths must be different")
-            if args.bits < 528:
+            if args.bits < MINIMUM_KEY_BITS:
                 raise ValueError("RSA-OAEP with SHA-256 requires at least 528 key bits")
             pair = generate_keypair(args.bits)
             save_public_key(pair.public_key, args.public_key)

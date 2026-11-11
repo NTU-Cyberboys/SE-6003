@@ -42,32 +42,36 @@ the extracted `SE-6003` folder. Then run the setup commands for your platform:
 
 ```powershell
 py -3 -m venv .venv
+if ($LASTEXITCODE -ne 0) { throw "Could not create .venv; check that Python 3 is installed." }
 .\.venv\Scripts\Activate.ps1
+if (-not $?) { throw "Activation failed; use the Command Prompt instructions below." }
+python -m pip install --upgrade pip
+if ($LASTEXITCODE -ne 0) { throw "Could not upgrade pip." }
 python -m pip install -e ".[dev]"
 ```
 
-The Windows Python Launcher (`py -3`) selects an installed Python 3 version.
-After activation, `python` refers to that Python 3 virtual environment. If
-PowerShell blocks the activation script, use Command Prompt instead. Run all
-three commands in the same Command Prompt window:
+`py -3` selects an installed Python 3 runtime. After activation, `python`
+refers to that Python 3 virtual environment. If `py` is not recognized, install
+Python from [python.org/downloads](https://www.python.org/downloads/) or use
+`python -m venv .venv` after confirming `python --version` reports Python 3.9
+or newer. If PowerShell blocks the activation script, use Command Prompt:
 
 ```bat
-py -3 -m venv .venv
-.venv\Scripts\activate.bat
-python -m pip install -e ".[dev]"
+py -3 -m venv .venv && call .venv\Scripts\activate.bat && python -m pip install --upgrade pip && python -m pip install -e ".[dev]"
 ```
 
 ### macOS or Linux
 
 ```sh
-python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install -e ".[dev]"
+python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install --upgrade pip && python3 -m pip install -e ".[dev]"
 ```
 
 If your system provides versioned interpreters (for example `python3.15`),
 use that command in place of `python3` when creating the environment.
 The commands below use `python3` on macOS/Linux. Windows does not
-consistently provide a `python3` command, so use `python` after activating
-the venv; `py -3` selects Python 3 when creating it.
+consistently provide a `python3` command across Python distributions, so use
+`python` after activating the venv. Some Windows installations provide a
+`python3` alias, but the examples use the activated venv's `python` command.
 
 ## Run the demo
 
@@ -78,8 +82,7 @@ included text, JSON, and CSV examples:
 python3 scripts/run_demo.py
 ```
 
-On Windows, `python3` is not consistently available as a command. In
-PowerShell, use `python scripts/run_demo.py`; after activation, this is the
+On Windows, use `python scripts/run_demo.py`; after activation, this is the
 Python 3 interpreter inside the virtual environment. To try your own content,
 pass a short UTF-8 message or a file path:
 
@@ -91,11 +94,28 @@ python3 scripts/run_demo.py --file /path/to/your/file.txt
 In PowerShell, use `python` instead of `python3` for the custom-input
 commands. The demo stores the generated keys, base64 ciphertext, and recovered
 file in `output/demo_artifacts/` (or in a directory passed with `--output-dir`).
+
+### What happens in the demo
+
+The demo exercises three operations, in order:
+
+1. **Key generation:** creates one RSA public/private key pair for the run.
+2. **Encryption:** encodes each input with RSA-OAEP using SHA-256 and MGF1,
+   then encrypts it with the public key. Ciphertext is saved as base64 text.
+3. **Decryption and verification:** decrypts with the matching private key
+   and checks that the recovered bytes exactly match the original input.
+
+With no options, it runs these operations on the included text, JSON, and CSV
+files. `--text` supplies UTF-8 bytes directly; `--file` reads a file as raw
+bytes. The output directory contains the public and private keys, a
+`<name>.ciphertext.b64` file, and a `<name>.recovered.<extension>` file for
+each input. The private key is unencrypted and intended only for this demo.
+
 The default 2048-bit key accepts up to 190 bytes per input. The demo explains
 the limit before generating keys; increase it with `--bits` for a larger
 single-message limit. RSA-OAEP here handles one short message at a time; it
 does not stream or encrypt arbitrarily large files. The generated private key
-is unencrypted and is only for learning.
+is only for learning.
 
 For a runtime-only install, replace `".[dev]"` with `"."` in the pip install
 command. The project does not require GNU Make; its shortcuts are optional.
@@ -134,10 +154,11 @@ private-key file inherits the destination directory's access-control list
 
 ## Command-line interface
 
-The package installs an `rsaoaep` command and supports `python3 -m rsaoaep`.
-The module form works in all shells and platforms and does not depend on the
-installed script directory being on `PATH`. `--help` and each subcommand's
-`--help` show the full argument list.
+The package installs an `rsaoaep` command and supports module invocation. Use
+`python3 -m rsaoaep` on macOS/Linux or `python -m rsaoaep` in the activated
+Windows environment. This form does not depend on the installed script
+directory being on `PATH`. `--help` and each subcommand's `--help` show the
+full argument list.
 
 ### Generate keys
 
@@ -146,14 +167,14 @@ python3 -m rsaoaep keygen --bits 2048 --public-key public.json --private-key pri
 ```
 
 The default key size is 2048 bits. Public and private key paths must differ.
-For this SHA-256 OAEP CLI, key generation rejects sizes below 528 bits; that
-minimum only permits an empty message and is not a security recommendation.
+The CLI and Python API reject sizes below 528 bits; that minimum only permits
+an empty message and is not a security recommendation.
 
 ### Encrypt text or a binary file
 
 ```sh
-python3 -m rsaoaep encrypt --key public.json --text "hello" > ciphertext.b64
-python3 -m rsaoaep encrypt --key public.json --input message.bin --label "context" > ciphertext.b64
+python3 -m rsaoaep encrypt --key public.json --text "hello" > text_ciphertext.b64
+python3 -m rsaoaep encrypt --key public.json --input message.bin --label "context" > file_ciphertext.b64
 ```
 
 Specify exactly one of `--text` and `--input`. Text and labels are UTF-8
@@ -163,7 +184,7 @@ and a newline to standard output.
 ### Decrypt ciphertext
 
 ```sh
-python3 -m rsaoaep decrypt --key private.json --input ciphertext.b64 --label "context" > recovered.bin
+python3 -m rsaoaep decrypt --key private.json --input file_ciphertext.b64 --label "context" > recovered.bin
 ```
 
 Specify exactly one of `--ciphertext` (base64 text) and `--input` (a file
@@ -171,6 +192,9 @@ containing base64 ciphertext). Decryption writes the original plaintext bytes
 to standard output without adding a newline; redirect output for binary data.
 The label must match the one used during encryption. Expected input/key errors
 are printed to standard error and return exit status 2.
+On Windows, use Command Prompt for binary-output redirection, or PowerShell
+7.4 or newer; older PowerShell versions may convert native command output
+while redirecting it.
 
 For ciphertext already copied as base64 text, pass it as
 `--ciphertext BASE64_VALUE` in place of `--input ciphertext.b64`. The file
@@ -252,6 +276,14 @@ not part of the implementation or automated test suite. It requires
 PyCryptodome to be installed separately and tests both directions of
 RSA-OAEP/SHA-256 encryption against that independent library. The package,
 tests, and benchmark scripts do not import or depend on PyCryptodome.
+
+To run it from the activated environment, install the optional package and
+run the script (use `python` instead of `python3` on Windows):
+
+```sh
+python3 -m pip install pycryptodome
+python3 scripts/reference_validation.py
+```
 
 ## Project map
 

@@ -10,12 +10,15 @@ The public Python interface is exported from `rsaoaep`:
 
 Messages and labels are byte strings. Text callers should encode/decode UTF-8
 explicitly. OAEP requires a modulus at least 66 bytes wide for SHA-256; the
-usable message size is the modulus width minus 66 bytes.
+usable message size is the modulus width minus 66 bytes. Key generation
+requires at least 528 bits, matching that minimum OAEP width.
 
 The CLI accepts UTF-8 text or a binary input file for encryption. Ciphertext
 is base64-encoded for transport. Decryption writes raw bytes to standard
-output. CLI labels are UTF-8 strings. The installed CLI and `python -m
-rsaoaep` are available on Windows, macOS, and Linux.
+output. CLI labels are UTF-8 strings. The installed CLI is available after
+installation on Windows, macOS, and Linux. Module invocation is
+`python3 -m rsaoaep` on macOS/Linux and `python -m rsaoaep` in an activated
+Windows virtual environment.
 
 Private-key files are restricted to owner read/write permissions on POSIX
 systems. On Windows they inherit the destination directory's access-control

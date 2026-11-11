@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from scripts import run_demo
 from rsaoaep.rsa_core import generate_keypair
+from scripts import run_demo
 
 
 @pytest.fixture
