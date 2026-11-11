@@ -12,74 +12,95 @@ development tools are used for tests, linting, and plots.
 > or formal security review. Key JSON is unencrypted. Use a maintained
 > cryptographic library for real secrets and production systems.
 
-## Clone and install on Windows, macOS, or Linux
+## Setup on Windows, macOS, or Linux
 
-Python 3.9 or newer is required. The package itself has no third-party runtime
-dependencies. The optional development install adds `pytest` and `ruff` for
-testing/linting and `matplotlib` for benchmark plots. Use a virtual
-environment so these tools and the package remain isolated from other Python
-projects.
+Python 3.9 or newer is required, matching the minimum declared in
+`pyproject.toml`. This does not guarantee compatibility with every past or
+future Python 3 release; use a currently supported Python 3 version and run
+the tests when changing interpreters. The project is intended for mainstream
+Windows, macOS, and Linux systems, but unusual operating systems or Python
+builds may need separate validation.
 
-Clone the repository and change into its root:
+The package itself has no third-party runtime dependencies. The optional
+development install adds `pytest` and `ruff` for testing/linting and
+`matplotlib` for benchmark plots. Use a virtual environment so these tools
+and the package remain isolated from other Python projects. Run the setup
+commands in the same terminal; activation keeps the environment enabled for
+the demo and the commands that follow.
 
-```text
-git clone <repository-url>
-cd Crypto
+Download the project from [GitHub](https://github.com/NTU-Cyberboys/SE-6003):
+
+```sh
+git clone https://github.com/NTU-Cyberboys/SE-6003.git
+cd SE-6003
 ```
 
-Replace `<repository-url>` with the URL for your Git remote. Create and
-install the environment using the instructions for your platform:
+Or select **Code → Download ZIP** on the GitHub page and open a terminal in
+the extracted `SE-6003` folder. Then run the setup commands for your platform:
 
 ### Windows (PowerShell)
 
 ```powershell
 py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.\.venv\Scripts\python.exe -m pytest
-.\.venv\Scripts\ruff.exe check src tests scripts
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
 ```
 
-The Windows Python Launcher (`py`) selects an installed Python 3 version.
-Alternatively, replace `py -3` with `python` if that command points to Python
-3.9 or newer. For Command Prompt, the virtual-environment executable is also
-`.venv\Scripts\python.exe`; activation, if desired, is
-`.venv\Scripts\activate.bat`.
+The Windows Python Launcher (`py -3`) selects an installed Python 3 version.
+After activation, `python` refers to that Python 3 virtual environment. If
+PowerShell blocks the activation script, use Command Prompt instead. Run all
+three commands in the same Command Prompt window:
+
+```bat
+py -3 -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -e ".[dev]"
+```
 
 ### macOS or Linux
 
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -e ".[dev]"
-.venv/bin/python -m pytest
-.venv/bin/ruff check src tests scripts
+python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install -e ".[dev]"
 ```
 
 If your system provides versioned interpreters (for example `python3.15`),
-use that command in place of `python3`. You can activate the environment with
-`. .venv/bin/activate`; activation is optional when invoking the environment's
-Python and Ruff paths directly as above.
+use that command in place of `python3` when creating the environment.
+The commands below use `python3` on macOS/Linux. Windows does not
+consistently provide a `python3` command, so use `python` after activating
+the venv; `py -3` selects Python 3 when creating it.
 
-The project does not require GNU Make. `Makefile` shortcuts are optional and
-require `make` plus a compatible shell; the Python commands in this README
-work without them. The implementation is pure Python and uses only
-cross-platform standard-library features. It is intended for supported
-mainstream Windows, macOS, and Linux systems with Python 3.9+; unusual Python
-builds or platforms without compatible Python wheels for the optional
-matplotlib dependency may omit chart generation.
+## Run the demo
 
-To install only the runtime package instead of the development tools, replace
-`".[dev]"` with `"."` in the pip install command.
+From the activated environment, run the demo to encrypt and decrypt the
+included text, JSON, and CSV examples:
 
-For the remaining examples, activate the environment first if you want to use
-the short `python`, `pytest`, `ruff`, and `rsaoaep` commands:
+```sh
+python3 scripts/run_demo.py
+```
 
-- PowerShell: `.\.venv\Scripts\Activate.ps1`
-- Command Prompt: `.\.venv\Scripts\activate.bat`
-- macOS/Linux: `. .venv/bin/activate`
+On Windows, `python3` is not consistently available as a command. In
+PowerShell, use `python scripts/run_demo.py`; after activation, this is the
+Python 3 interpreter inside the virtual environment. To try your own content,
+pass a short UTF-8 message or a file path:
 
-Activation is optional. Without it, invoke the environment's Python directly:
-`.venv\Scripts\python.exe` on Windows or `.venv/bin/python` on macOS/Linux.
-This also avoids shell activation-policy configuration on Windows.
+```sh
+python3 scripts/run_demo.py --text "Try encrypting my own text"
+python3 scripts/run_demo.py --file /path/to/your/file.txt
+```
+
+In PowerShell, use `python` instead of `python3` for the custom-input
+commands. The demo stores the generated keys, base64 ciphertext, and recovered
+file in `output/demo_artifacts/` (or in a directory passed with `--output-dir`).
+The default 2048-bit key accepts up to 190 bytes per input. The demo explains
+the limit before generating keys; increase it with `--bits` for a larger
+single-message limit. RSA-OAEP here handles one short message at a time; it
+does not stream or encrypt arbitrarily large files. The generated private key
+is unencrypted and is only for learning.
+
+For a runtime-only install, replace `".[dev]"` with `"."` in the pip install
+command. The project does not require GNU Make; its shortcuts are optional.
+It uses Python's cross-platform standard library, while chart generation
+needs the optional `matplotlib` dependency installed by the development setup.
 
 ## Features and behavior
 
@@ -113,7 +134,7 @@ private-key file inherits the destination directory's access-control list
 
 ## Command-line interface
 
-The package installs an `rsaoaep` command and supports `python -m rsaoaep`.
+The package installs an `rsaoaep` command and supports `python3 -m rsaoaep`.
 The module form works in all shells and platforms and does not depend on the
 installed script directory being on `PATH`. `--help` and each subcommand's
 `--help` show the full argument list.
@@ -121,7 +142,7 @@ installed script directory being on `PATH`. `--help` and each subcommand's
 ### Generate keys
 
 ```sh
-python -m rsaoaep keygen --bits 2048 --public-key public.json --private-key private.json
+python3 -m rsaoaep keygen --bits 2048 --public-key public.json --private-key private.json
 ```
 
 The default key size is 2048 bits. Public and private key paths must differ.
@@ -131,8 +152,8 @@ minimum only permits an empty message and is not a security recommendation.
 ### Encrypt text or a binary file
 
 ```sh
-python -m rsaoaep encrypt --key public.json --text "hello" > ciphertext.b64
-python -m rsaoaep encrypt --key public.json --input message.bin --label "context" > ciphertext.b64
+python3 -m rsaoaep encrypt --key public.json --text "hello" > ciphertext.b64
+python3 -m rsaoaep encrypt --key public.json --input message.bin --label "context" > ciphertext.b64
 ```
 
 Specify exactly one of `--text` and `--input`. Text and labels are UTF-8
@@ -142,7 +163,7 @@ and a newline to standard output.
 ### Decrypt ciphertext
 
 ```sh
-python -m rsaoaep decrypt --key private.json --input ciphertext.b64 --label "context" > recovered.bin
+python3 -m rsaoaep decrypt --key private.json --input ciphertext.b64 --label "context" > recovered.bin
 ```
 
 Specify exactly one of `--ciphertext` (base64 text) and `--input` (a file
@@ -179,7 +200,7 @@ defined in `rsaoaep.exceptions`; `MessageTooLongError`,
 Run the complete suite and linter from the project root:
 
 ```sh
-python -m pytest
+python3 -m pytest
 ruff check src tests scripts
 ```
 
@@ -190,20 +211,8 @@ length/range, tampering, and wrong labels.
 
 The `Makefile` provides optional shortcuts: `make test`, `make lint`,
 `make demo`, `make benchmark`, and `make plots`. These require `make` and use
-`python`, `pytest`, and `ruff` from the active environment. On Windows without
+`python3`, `pytest`, and `ruff` from the active environment. On Windows without
 Make, run the equivalent Python commands from this README.
-
-## Demo
-
-Run:
-
-```sh
-python scripts/run_demo.py
-```
-
-The demo creates a 1024-bit key pair, verifies a labeled in-memory round trip,
-and writes key JSON and base64 ciphertext under `output/demo_artifacts/`.
-The output directory is git-ignored because it contains a private key.
 
 ## Benchmarks and report outputs
 
@@ -211,8 +220,8 @@ The runner defaults to 1024-, 2048-, and 3072-bit keys, three repeats per
 size, and `data/benchmark_results.csv`:
 
 ```sh
-python scripts/run_benchmarks.py --bits 1024 2048 3072 --repeats 3
-python scripts/plot_benchmarks.py
+python3 scripts/run_benchmarks.py --bits 1024 2048 3072 --repeats 3
+python3 scripts/plot_benchmarks.py
 ```
 
 Each repeat generates a fresh key pair, then times one key generation, one
@@ -256,7 +265,7 @@ src/rsaoaep/       Package implementation and CLI
   oaep.py          SHA-256 OAEP encoding/decoding and message-size limit
   serialization.py JSON key loading and saving
   exceptions.py    Package validation and decryption exceptions
-  cli.py           argparse commands; __main__.py enables python -m rsaoaep
+  cli.py           argparse commands; __main__.py enables python3 -m rsaoaep
   benchmark.py     Benchmark collection and summary statistics
 tests/             Unit, integration, CLI, and malformed-input tests
 scripts/           Demo, benchmark, chart, and optional reference scripts
