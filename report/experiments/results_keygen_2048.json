@@ -1,0 +1,15 @@
+{
+  "2048": {
+    "keys": 40,
+    "pairs_per_key": {
+      "n": 40,
+      "mean": 1.625,
+      "median": 1.0,
+      "stdev": 1.125178048588596,
+      "min": 1.0,
+      "max": 6.0
+    },
+    "acceptance_rate_empirical": 0.6153846153846154,
+    "acceptance_rate_theory": 0.6137056388801094
+  }
+}

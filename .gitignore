@@ -7,3 +7,4 @@ build/
 dist/
 *.egg-info/
 output/demo_artifacts/*
+*.DS_Store

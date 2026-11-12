@@ -1,0 +1,34 @@
+{
+  "512": {
+    "samples": 300,
+    "candidates": {
+      "n": 300,
+      "mean": 189.32,
+      "median": 146.5,
+      "stdev": 180.9983765333057,
+      "min": 1,
+      "max": 1112
+    },
+    "rejected_trial_division": {
+      "n": 300,
+      "mean": 132.48666666666668,
+      "median": 104.0,
+      "stdev": 127.67319467171313,
+      "min": 0,
+      "max": 822
+    },
+    "rejected_miller_rabin": {
+      "n": 300,
+      "mean": 55.833333333333336,
+      "median": 42.0,
+      "stdev": 53.90272629371548,
+      "min": 0,
+      "max": 300
+    },
+    "expected_candidates_pnt": 177.445678223346,
+    "single_round_checked": 5023,
+    "single_round_false_accepts": 0
+  },
+  "trial_division_survival_theory": 0.2974420243245135,
+  "timing_ms": {}
+}

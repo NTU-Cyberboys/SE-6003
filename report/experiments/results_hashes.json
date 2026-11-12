@@ -1,0 +1,58 @@
+{
+  "sha256": {
+    "hLen": 32,
+    "max_message_bytes_2048": 190,
+    "interop_trials": 50,
+    "interop_ok": 50,
+    "encode_us": {
+      "n": 5000,
+      "mean": 11.102335,
+      "median": 10.917,
+      "stdev": 1.2142757800059185,
+      "min": 10.5,
+      "max": 39.542
+    }
+  },
+  "sha512": {
+    "hLen": 64,
+    "max_message_bytes_2048": 126,
+    "interop_trials": 50,
+    "interop_ok": 50,
+    "encode_us": {
+      "n": 5000,
+      "mean": 11.2022056,
+      "median": 10.708,
+      "stdev": 2.5915637263702793,
+      "min": 9.875,
+      "max": 92.375
+    }
+  },
+  "sha3_256": {
+    "hLen": 32,
+    "max_message_bytes_2048": 190,
+    "interop_trials": 50,
+    "interop_ok": 50,
+    "encode_us": {
+      "n": 5000,
+      "mean": 12.9607986,
+      "median": 12.375,
+      "stdev": 1.9076252602816866,
+      "min": 11.875,
+      "max": 57.458
+    }
+  },
+  "sha3_512": {
+    "hLen": 64,
+    "max_message_bytes_2048": 126,
+    "interop_trials": 50,
+    "interop_ok": 50,
+    "encode_us": {
+      "n": 5000,
+      "mean": 11.0492766,
+      "median": 10.667,
+      "stdev": 1.3957433501874041,
+      "min": 10.333,
+      "max": 44.375
+    }
+  }
+}

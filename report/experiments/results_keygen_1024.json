@@ -1,0 +1,15 @@
+{
+  "1024": {
+    "keys": 200,
+    "pairs_per_key": {
+      "n": 200,
+      "mean": 1.595,
+      "median": 1.0,
+      "stdev": 0.9878533653112611,
+      "min": 1.0,
+      "max": 6.0
+    },
+    "acceptance_rate_empirical": 0.6269592476489029,
+    "acceptance_rate_theory": 0.6137056388801094
+  }
+}
